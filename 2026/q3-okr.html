@@ -4,332 +4,340 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rider UX Team — OKR Q3 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0f0f13;
-      --surface: #1a1a22;
-      --surface-2: #22222e;
-      --border: rgba(255,255,255,0.08);
-      --text: #e8e8f0;
-      --muted: #8888a0;
-      --muted-2: #55556a;
-      --radius: 14px;
+      --bg:       #fffcec;
+      --surface:  #ffffff;
+      --surface-2:#f5f1e0;
+      --border:   rgba(0,0,0,0.1);
+      --border-2: rgba(0,0,0,0.06);
+      --text:     #0a0a0a;
+      --muted:    #6b6659;
+      --muted-2:  #9e9889;
+      --accent:   #3139fb;
+      --radius:   8px;
 
-      --o1: #7c6af7;   --o1-dim: rgba(124,106,247,0.13);
-      --o2: #4ade80;   --o2-dim: rgba(74,222,128,0.11);
-      --o3: #fbbf24;   --o3-dim: rgba(251,191,36,0.11);
-      --o4: #f472b6;   --o4-dim: rgba(244,114,182,0.11);
-      --o5: #22d3ee;   --o5-dim: rgba(34,211,238,0.11);
+      --o1: #4f46e5;
+      --o2: #16a34a;
+      --o3: #d97706;
+      --o4: #db2777;
+      --o5: #0891b2;
     }
 
     html { scroll-behavior: smooth; }
+
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16px;
       line-height: 1.6;
       min-height: 100vh;
     }
 
     /* HERO */
     .hero {
-      padding: 32px 24px 20px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -100px; left: 50%; transform: translateX(-50%);
-      width: 600px; height: 500px;
-      background: radial-gradient(circle, rgba(124,106,247,0.13) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    /* STATUS BANNER */
-    .status-banner {
-      display: flex;
-      align-items: center;
-      gap: 12px;
       max-width: 860px;
-      margin: 0 auto 20px;
-      padding: 10px 14px 10px 16px;
-      background: rgba(251,191,36,0.07);
-      border: 1px solid rgba(251,191,36,0.22);
-      border-radius: 10px;
-      transition: opacity 0.3s, max-height 0.35s, margin 0.3s, padding 0.3s;
-      overflow: hidden;
+      margin: 0 auto;
+      padding: 52px 32px 32px;
     }
-    .status-banner.hidden {
-      opacity: 0;
-      max-height: 0;
-      margin-bottom: 0;
-      padding-top: 0;
-      padding-bottom: 0;
-      pointer-events: none;
-    }
-    .status-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: #fbbf24;
-      flex-shrink: 0;
-      box-shadow: 0 0 6px rgba(251,191,36,0.5);
-      animation: pulse 2.4s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-    .status-text {
-      flex: 1;
-      font-size: 12px;
-      color: rgba(251,191,36,0.85);
-      line-height: 1.4;
-    }
-    .status-text strong { font-weight: 600; color: #fbbf24; }
-    .status-dismiss {
-      background: none;
-      border: none;
-      color: rgba(251,191,36,0.4);
-      font-size: 16px;
-      cursor: pointer;
-      padding: 2px 4px;
-      line-height: 1;
-      flex-shrink: 0;
-      transition: color 0.15s;
-    }
-    .status-dismiss:hover { color: #fbbf24; }
-
-    /* SHOW STATUS TRIGGER */
-    .status-restore {
-      display: none;
-      align-items: center;
-      gap: 5px;
-      background: rgba(251,191,36,0.1);
-      border: 1px solid rgba(251,191,36,0.25);
-      color: rgba(251,191,36,0.7);
+    .eyebrow {
+      font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
       font-size: 11px;
-      font-weight: 600;
-      padding: 3px 10px 3px 8px;
-      border-radius: 100px;
-      cursor: pointer;
-      transition: all 0.15s;
-      margin-left: auto;
-    }
-    .status-restore:hover { color: #fbbf24; border-color: rgba(251,191,36,0.45); }
-    .status-restore.visible { display: flex; }
-    .status-restore-dot { width: 6px; height: 6px; border-radius: 50%; background: #fbbf24; animation: pulse 2.4s ease-in-out infinite; }
-
-    /* UPDATED MARKER */
-    .kr-card.updated { background: rgba(255,255,255,0.025); }
-    .updated-mark {
-      font-size: 9px;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--muted-2);
-      border: 1px solid var(--border);
-      padding: 1px 6px;
-      border-radius: 4px;
-      margin-left: 6px;
-      vertical-align: middle;
-      flex-shrink: 0;
-      align-self: center;
+      color: var(--muted);
+      margin-bottom: 14px;
     }
     h1 {
-      font-size: clamp(26px, 4.5vw, 46px);
+      font-size: clamp(28px, 5vw, 48px);
       font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1.1;
-      margin-bottom: 10px;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      color: var(--text);
+      margin-bottom: 12px;
     }
-    h1 span { color: var(--o1); }
+    h1 em { font-style: normal; color: var(--accent); }
     .hero-sub {
-      color: var(--muted);
       font-size: 15px;
+      color: var(--muted);
       white-space: nowrap;
-      margin: 0 auto 16px;
     }
 
-    /* STATS */
-    .stats {
+    /* STATS + LAST UPDATED */
+    .meta-row {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 32px 28px;
       display: flex;
-      justify-content: center;
-      padding: 0 24px 28px;
+      align-items: center;
+      gap: 16px;
     }
     .stats-pill {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      background: rgba(0,0,0,0.7);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      padding: 6px 16px;
+      gap: 8px;
+      background: var(--text);
+      color: rgba(255,255,255,0.7);
+      border-radius: 6px;
+      padding: 5px 14px;
       font-size: 12px;
-      color: var(--muted);
     }
-    .stats-pill strong { color: var(--text); font-weight: 600; }
-    .stats-sep { color: var(--muted-2); }
-    .stats-updated { font-size: 11px; color: var(--muted-2); margin-top: 6px; text-align: center; }
+    .stats-pill strong { color: #fff; font-weight: 600; }
+    .stats-sep { opacity: 0.35; }
+    .last-updated {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      color: var(--muted-2);
+      letter-spacing: 0.04em;
+    }
+
+    /* STATUS BANNER */
+    .status-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 32px 20px;
+    }
+    .status-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px 9px 14px;
+      background: #fffbea;
+      border: 1px solid rgba(217,119,6,0.25);
+      border-left: 3px solid #d97706;
+      border-radius: var(--radius);
+      transition: all 0.3s;
+      overflow: hidden;
+    }
+    .status-banner.hidden { opacity: 0; max-height: 0; padding: 0; margin: 0; pointer-events: none; }
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #d97706;
+      flex-shrink: 0;
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+    .status-text {
+      flex: 1;
+      font-size: 12px;
+      color: #92400e;
+    }
+    .status-text strong { font-weight: 600; }
+    .status-dismiss {
+      background: none;
+      border: none;
+      color: #b45309;
+      font-size: 15px;
+      cursor: pointer;
+      padding: 0 2px;
+      line-height: 1;
+      opacity: 0.5;
+      transition: opacity 0.15s;
+    }
+    .status-dismiss:hover { opacity: 1; }
 
     /* STICKY NAV */
     .sticky-nav {
       position: sticky;
       top: 0;
       z-index: 100;
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      flex-wrap: wrap;
-      padding: 10px 24px;
-      background: rgba(15,15,19,0.88);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: rgba(255,252,236,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
+      padding: 10px 32px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow-x: auto;
     }
     .nav-btn {
       display: flex;
       align-items: center;
       gap: 6px;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
+      background: none;
+      border: 1px solid transparent;
       color: var(--muted);
       font-size: 12px;
       font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 100px;
+      font-family: inherit;
+      padding: 5px 12px;
+      border-radius: var(--radius);
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
       white-space: nowrap;
     }
-    .nav-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
-    .nav-btn[data-o="1"].active { background: var(--o1-dim); border-color: var(--o1); color: var(--o1); }
-    .nav-btn[data-o="2"].active { background: var(--o2-dim); border-color: var(--o2); color: var(--o2); }
-    .nav-btn[data-o="3"].active { background: var(--o3-dim); border-color: var(--o3); color: var(--o3); }
-    .nav-btn[data-o="4"].active { background: var(--o4-dim); border-color: var(--o4); color: var(--o4); }
-    .nav-btn[data-o="5"].active { background: var(--o5-dim); border-color: var(--o5); color: var(--o5); }
-    .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .dot.o1 { background: var(--o1); }
-    .dot.o2 { background: var(--o2); }
-    .dot.o3 { background: var(--o3); }
-    .dot.o4 { background: var(--o4); }
-    .dot.o5 { background: var(--o5); }
+    .nav-btn:hover { background: var(--surface-2); color: var(--text); }
+    .nav-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+    .nav-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .nav-dot.o1 { background: var(--o1); }
+    .nav-dot.o2 { background: var(--o2); }
+    .nav-dot.o3 { background: var(--o3); }
+    .nav-dot.o4 { background: var(--o4); }
+    .nav-dot.o5 { background: var(--o5); }
 
-    /* LAYOUT */
-    .container { max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
+    .status-restore {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      margin-left: auto;
+      background: none;
+      border: 1px solid rgba(217,119,6,0.3);
+      color: #d97706;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'SF Mono', monospace;
+      letter-spacing: 0.06em;
+      padding: 4px 10px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .status-restore:hover { background: rgba(217,119,6,0.06); }
+    .status-restore.visible { display: flex; }
+    .restore-dot { width: 5px; height: 5px; border-radius: 50%; background: #d97706; animation: pulse 2.4s ease-in-out infinite; }
+
+    /* CONTAINER */
+    .container { max-width: 860px; margin: 0 auto; padding: 0 32px 80px; }
 
     /* OBJECTIVE */
-    .objective { margin-top: 52px; }
+    .objective { margin-top: 56px; }
     .obj-header {
       display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      margin-bottom: 14px;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--text);
     }
-    .obj-num {
-      flex-shrink: 0;
+    .obj-eyebrow {
+      font-family: 'SF Mono', 'Fira Code', monospace;
       font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 100px;
-      border: 1.5px solid;
-      margin-top: 4px;
-    }
-    .obj-num.o1 { color: var(--o1); border-color: var(--o1); background: var(--o1-dim); }
-    .obj-num.o2 { color: var(--o2); border-color: var(--o2); background: var(--o2-dim); }
-    .obj-num.o3 { color: var(--o3); border-color: var(--o3); background: var(--o3-dim); }
-    .obj-num.o4 { color: var(--o4); border-color: var(--o4); background: var(--o4-dim); }
-    .obj-num.o5 { color: var(--o5); border-color: var(--o5); background: var(--o5-dim); }
-    .obj-title {
-      font-size: clamp(16px, 2.5vw, 21px);
       font-weight: 700;
-      letter-spacing: -0.01em;
-      line-height: 1.25;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted-2);
+      flex-shrink: 0;
     }
+    .obj-title {
+      font-size: clamp(15px, 2vw, 19px);
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.2;
+    }
+    .obj-strip {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+      margin-bottom: 1px;
+    }
+    .obj-strip.o1 { background: var(--o1); }
+    .obj-strip.o2 { background: var(--o2); }
+    .obj-strip.o3 { background: var(--o3); }
+    .obj-strip.o4 { background: var(--o4); }
+    .obj-strip.o5 { background: var(--o5); }
 
     /* KR CARDS */
-    .krs { display: flex; flex-direction: column; gap: 10px; }
+    .krs { display: flex; flex-direction: column; gap: 8px; }
 
     .kr-card {
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-2);
       border-radius: var(--radius);
       border-left: 3px solid;
-      padding: 16px 18px 14px;
-      transition: border-color 0.2s;
+      padding: 14px 16px 12px;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
-    .kr-card:hover { border-color: rgba(255,255,255,0.13); }
+    .kr-card:hover {
+      border-color: var(--border);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
     .kr-card.o1 { border-left-color: var(--o1); }
     .kr-card.o2 { border-left-color: var(--o2); }
     .kr-card.o3 { border-left-color: var(--o3); }
     .kr-card.o4 { border-left-color: var(--o4); }
     .kr-card.o5 { border-left-color: var(--o5); }
+    .kr-card.updated { background: #fafafa; }
 
     .kr-top {
       display: flex;
       align-items: baseline;
-      gap: 10px;
-      margin-bottom: 6px;
+      gap: 9px;
     }
     .kr-label {
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.1em;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--muted-2);
       flex-shrink: 0;
+      padding-top: 1px;
     }
     .kr-text {
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 500;
       line-height: 1.55;
       color: var(--text);
+      flex: 1;
+    }
+    .updated-mark {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted-2);
+      border: 1px solid var(--border);
+      padding: 1px 5px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      align-self: center;
     }
 
-    /* METADATA ROW */
+    /* METADATA */
     .kr-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px 20px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--border);
+      gap: 10px 20px;
+      margin-top: 9px;
+      padding-top: 9px;
+      border-top: 1px solid var(--border-2);
     }
-    .meta-item {
-      display: flex;
-      align-items: baseline;
-      gap: 5px;
-    }
+    .meta-item { display: flex; align-items: baseline; gap: 5px; }
     .meta-key {
-      font-size: 10px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 9px;
       font-weight: 700;
-      letter-spacing: 0.07em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--muted-2);
       white-space: nowrap;
     }
-    .meta-val {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-    .meta-val.poc { color: var(--o1); }
-    .meta-val a { color: var(--o5); text-decoration: none; }
+    .meta-val { font-size: 12px; color: var(--muted); }
+    .meta-val.poc { color: var(--accent); font-weight: 500; }
+    .meta-val a { color: var(--accent); text-decoration: none; }
     .meta-val a:hover { text-decoration: underline; }
-    .sep { color: var(--muted-2); font-size: 11px; }
+    .meta-val.tbd { color: var(--muted-2); font-style: italic; }
 
     /* DIVIDER */
-    .obj-divider { height: 1px; background: var(--border); margin-top: 52px; }
+    .obj-divider { height: 1px; background: var(--border-2); margin-top: 56px; }
 
     /* FOOTER */
     footer {
       border-top: 1px solid var(--border);
-      padding: 28px 24px;
-      text-align: center;
+      padding: 28px 32px;
+      max-width: 860px;
+      margin: 0 auto;
       color: var(--muted);
       font-size: 13px;
     }
@@ -338,26 +346,27 @@
 </head>
 <body>
 
+  <!-- HERO -->
   <div class="hero">
-    <h1>Rider UX Team — <span>OKR Q3 2026</span></h1>
+    <div class="eyebrow">Rider UX Team · Q3 2026</div>
+    <h1>Objectives &amp;<br><em>Key Results</em></h1>
     <p class="hero-sub">Objectives and key results across design, research, writers, and design system.</p>
   </div>
 
-  <div class="stats">
-    <div>
-      <div class="stats-pill">
-        <strong>5</strong> Objectives
-        <span class="stats-sep">·</span>
-        <strong>14</strong> Key Results
-        <span class="stats-sep">·</span>
-        Q3 2026
-      </div>
-      <div class="stats-updated">Last updated Jun 10, 2026</div>
+  <!-- META ROW -->
+  <div class="meta-row">
+    <div class="stats-pill">
+      <strong>5</strong> Objectives
+      <span class="stats-sep">·</span>
+      <strong>14</strong> Key Results
+      <span class="stats-sep">·</span>
+      Q3 2026
     </div>
+    <span class="last-updated">Last updated Jun 10, 2026</span>
   </div>
 
   <!-- STATUS BANNER -->
-  <div class="container" style="padding-bottom:0;">
+  <div class="status-wrap">
     <div class="status-banner" id="status-banner">
       <span class="status-dot"></span>
       <span class="status-text"><strong>Work in progress</strong> — target to finalize everything end of Jun.</span>
@@ -365,13 +374,14 @@
     </div>
   </div>
 
+  <!-- STICKY NAV -->
   <nav class="sticky-nav">
-    <button class="nav-btn active" data-o="1" onclick="goTo('o1',this)"><span class="dot o1"></span>Deliveries</button>
-    <button class="nav-btn" data-o="2" onclick="goTo('o2',this)"><span class="dot o2"></span>Workforce</button>
-    <button class="nav-btn" data-o="3" onclick="goTo('o3',this)"><span class="dot o3"></span>Research</button>
-    <button class="nav-btn" data-o="4" onclick="goTo('o4',this)"><span class="dot o4"></span>Design System & Content</button>
-    <button class="nav-btn" data-o="5" onclick="goTo('o5',this)"><span class="dot o5"></span>AI-native</button>
-    <button class="status-restore" id="status-restore" onclick="restoreStatus()" title="Show status"><span class="status-restore-dot"></span>WIP</button>
+    <button class="nav-btn active" data-o="1" onclick="goTo('o1',this)"><span class="nav-dot o1"></span>Deliveries</button>
+    <button class="nav-btn" data-o="2" onclick="goTo('o2',this)"><span class="nav-dot o2"></span>Workforce</button>
+    <button class="nav-btn" data-o="3" onclick="goTo('o3',this)"><span class="nav-dot o3"></span>Research</button>
+    <button class="nav-btn" data-o="4" onclick="goTo('o4',this)"><span class="nav-dot o4"></span>Design System & Content</button>
+    <button class="nav-btn" data-o="5" onclick="goTo('o5',this)"><span class="nav-dot o5"></span>AI-native</button>
+    <button class="status-restore" id="status-restore" onclick="restoreStatus()"><span class="restore-dot"></span>WIP</button>
   </nav>
 
   <div class="container">
@@ -379,7 +389,8 @@
     <!-- O1 -->
     <div class="objective" id="o1">
       <div class="obj-header">
-        <span class="obj-num o1">O1</span>
+        <span class="obj-eyebrow">O1</span>
+        <span class="obj-strip o1"></span>
         <h2 class="obj-title">Improve core rider experiences</h2>
       </div>
       <div class="krs">
@@ -427,7 +438,8 @@
     <!-- O2 -->
     <div class="objective" id="o2">
       <div class="obj-header">
-        <span class="obj-num o2">O2</span>
+        <span class="obj-eyebrow">O2</span>
+        <span class="obj-strip o2"></span>
         <h2 class="obj-title">Improve working models, payments, and rewards experience</h2>
       </div>
       <div class="krs">
@@ -490,7 +502,8 @@
     <!-- O3 -->
     <div class="objective" id="o3">
       <div class="obj-header">
-        <span class="obj-num o3">O3</span>
+        <span class="obj-eyebrow">O3</span>
+        <span class="obj-strip o3"></span>
         <h2 class="obj-title">Research</h2>
       </div>
       <div class="krs">
@@ -539,7 +552,7 @@
           <div class="kr-meta">
             <div class="meta-item"><span class="meta-key">Target</span><span class="meta-val">Setup time −25% · Consult 100% by AI</span></div>
             <div class="meta-item"><span class="meta-key">Deadline</span><span class="meta-val">Q3</span></div>
-            <div class="meta-item"><span class="meta-key">POC</span><span class="meta-val" style="color:var(--muted-2);font-style:italic;">TBD</span></div>
+            <div class="meta-item"><span class="meta-key">POC</span><span class="meta-val tbd">TBD</span></div>
           </div>
         </div>
 
@@ -551,7 +564,8 @@
     <!-- O4 -->
     <div class="objective" id="o4">
       <div class="obj-header">
-        <span class="obj-num o4">O4</span>
+        <span class="obj-eyebrow">O4</span>
+        <span class="obj-strip o4"></span>
         <h2 class="obj-title">Scaling Design System & Content / L10n</h2>
       </div>
       <div class="krs">
@@ -612,7 +626,8 @@
     <!-- O5 -->
     <div class="objective" id="o5">
       <div class="obj-header">
-        <span class="obj-num o5">O5</span>
+        <span class="obj-eyebrow">O5</span>
+        <span class="obj-strip o5"></span>
         <h2 class="obj-title">Becoming an AI-native UX team</h2>
       </div>
       <div class="krs">
