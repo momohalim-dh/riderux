@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rider UX Team — OKR Q3 2026</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --surface-2: #22222e;
+      --border: rgba(255,255,255,0.08);
+      --text: #e8e8f0;
+      --muted: #8888a0;
+      --radius: 14px;
+      --radius-sm: 8px;
+
+      --o1: #7c6af7;   --o1-dim: rgba(124,106,247,0.13);
+      --o2: #4ade80;   --o2-dim: rgba(74,222,128,0.11);
+      --o3: #fbbf24;   --o3-dim: rgba(251,191,36,0.11);
+      --o4: #f472b6;   --o4-dim: rgba(244,114,182,0.11);
+      --o5: #22d3ee;   --o5-dim: rgba(34,211,238,0.11);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* HERO */
+    .hero {
+      padding: 64px 24px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -100px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 500px;
+      background: radial-gradient(circle, rgba(124,106,247,0.14) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .wip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(251,191,36,0.12);
+      border: 1px solid rgba(251,191,36,0.35);
+      color: #fbbf24;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 100px;
+      margin-bottom: 18px;
+    }
+    .wip-badge::before { content: '◉'; font-size: 9px; }
+    h1 {
+      font-size: clamp(26px, 4.5vw, 46px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+    h1 span { color: var(--o1); }
+    .hero-sub {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 480px;
+      margin: 0 auto 36px;
+    }
+
+    /* STATS */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      padding: 0 24px 48px;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--o1);
+      line-height: 1;
+    }
+    .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .stat-divider { width: 1px; background: var(--border); align-self: stretch; }
+
+    /* STICKY NAV */
+    .sticky-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 10px 24px;
+      background: rgba(15,15,19,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .nav-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
+    .nav-btn.active { color: #fff; }
+    .nav-btn[data-o="1"].active { background: rgba(124,106,247,0.25); border-color: var(--o1); color: var(--o1); }
+    .nav-btn[data-o="2"].active { background: rgba(74,222,128,0.2);   border-color: var(--o2); color: var(--o2); }
+    .nav-btn[data-o="3"].active { background: rgba(251,191,36,0.2);   border-color: var(--o3); color: var(--o3); }
+    .nav-btn[data-o="4"].active { background: rgba(244,114,182,0.2);  border-color: var(--o4); color: var(--o4); }
+    .nav-btn[data-o="5"].active { background: rgba(34,211,238,0.2);   border-color: var(--o5); color: var(--o5); }
+    .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .dot.o1 { background: var(--o1); }
+    .dot.o2 { background: var(--o2); }
+    .dot.o3 { background: var(--o3); }
+    .dot.o4 { background: var(--o4); }
+    .dot.o5 { background: var(--o5); }
+
+    /* LAYOUT */
+    .container { max-width: 880px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* OBJECTIVE BLOCK */
+    .objective { margin-top: 48px; }
+    .obj-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .obj-num {
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 11px;
+      border-radius: 100px;
+      border: 1.5px solid;
+      margin-top: 3px;
+    }
+    .obj-num.o1 { color: var(--o1); border-color: var(--o1); background: var(--o1-dim); }
+    .obj-num.o2 { color: var(--o2); border-color: var(--o2); background: var(--o2-dim); }
+    .obj-num.o3 { color: var(--o3); border-color: var(--o3); background: var(--o3-dim); }
+    .obj-num.o4 { color: var(--o4); border-color: var(--o4); background: var(--o4-dim); }
+    .obj-num.o5 { color: var(--o5); border-color: var(--o5); background: var(--o5-dim); }
+
+    .obj-title {
+      font-size: clamp(16px, 2.5vw, 22px);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+
+    /* KR CARDS */
+    .krs { display: flex; flex-direction: column; gap: 12px; }
+    .kr-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color 0.2s;
+      border-left: 3px solid;
+    }
+    .kr-card.o1 { border-left-color: var(--o1); }
+    .kr-card.o2 { border-left-color: var(--o2); }
+    .kr-card.o3 { border-left-color: var(--o3); }
+    .kr-card.o4 { border-left-color: var(--o4); }
+    .kr-card.o5 { border-left-color: var(--o5); }
+
+    .kr-card:hover { border-color: rgba(255,255,255,0.15); border-left-color: inherit; }
+
+    .kr-summary {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 18px 20px;
+      cursor: pointer;
+    }
+    .kr-label {
+      flex-shrink: 0;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-top: 3px;
+      min-width: 28px;
+    }
+    .kr-text { font-size: 14px; font-weight: 500; line-height: 1.5; flex: 1; }
+    .kr-chevron {
+      width: 18px; height: 18px;
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: transform 0.25s;
+      margin-top: 2px;
+    }
+    .kr-card.open .kr-chevron { transform: rotate(180deg); }
+
+    .kr-detail {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .kr-card.open .kr-detail { max-height: 300px; }
+    .kr-detail-inner {
+      border-top: 1px solid var(--border);
+      padding: 16px 20px 18px 62px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .kr-meta { display: flex; flex-direction: column; gap: 3px; }
+    .kr-meta-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .kr-meta-value { font-size: 13px; color: var(--text); }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
+    .chip {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .chip.poc { border-color: rgba(124,106,247,0.3); background: rgba(124,106,247,0.1); color: var(--o1); }
+    .chip.tbd { color: var(--muted); font-style: italic; }
+
+    /* DIVIDER */
+    .obj-divider {
+      height: 1px;
+      background: var(--border);
+      margin-top: 48px;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer strong { color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="wip-badge">Work in progress</div>
+    <h1>Rider UX Team<br><span>OKR Q3 2026</span></h1>
+    <p class="hero-sub">Objectives and key results for the Rider UX team — design, research, writers, and design system.</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Objectives</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">14</div>
+      <div class="stat-label">Key Results</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">Q3</div>
+      <div class="stat-label">2026</div>
+    </div>
+  </div>
+
+  <!-- STICKY NAV -->
+  <nav class="sticky-nav" id="sticky-nav">
+    <button class="nav-btn active" data-o="1" onclick="goTo('o1', this)"><span class="dot o1"></span>Deliveries</button>
+    <button class="nav-btn" data-o="2" onclick="goTo('o2', this)"><span class="dot o2"></span>Workforce</button>
+    <button class="nav-btn" data-o="3" onclick="goTo('o3', this)"><span class="dot o3"></span>Research</button>
+    <button class="nav-btn" data-o="4" onclick="goTo('o4', this)"><span class="dot o4"></span>Design System & Content</button>
+    <button class="nav-btn" data-o="5" onclick="goTo('o5', this)"><span class="dot o5"></span>AI-native</button>
+  </nav>
+
+  <div class="container">
+
+    <!-- O1 -->
+    <div class="objective" id="o1">
+      <div class="obj-header">
+        <span class="obj-num o1">O1</span>
+        <h2 class="obj-title">Improve core rider experiences</h2>
+      </div>
+      <div class="krs">
+
+        <div class="kr-card o1" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR1</span>
+            <span class="kr-text">Delivery experience: Deliver the vision of the rider's UX — map the moments that matter, when riders are in control, and when the platform steps in to support them.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Target</div>
+                <div class="kr-meta-value">Design journey 100% done</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Irem Cakiroglu</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card o1" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR2</span>
+            <span class="kr-text">Zero Friction: Fix at least 25% of heuristic issues and QA friction points across every squad's core experience.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Target</div>
+                <div class="kr-meta-value">25% per squad</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Deadline</div>
+                <div class="kr-meta-value">Q3</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Irem Cakiroglu</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card o1" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR3</span>
+            <span class="kr-text">UX Outreach: Identify at least 1 opportunity leveraging brands/consumer products' insights to improve rider experience for Q4 or 2027.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Irem Cakiroglu</span></div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Collaborators</div>
+                <div class="chips"><span class="chip">Agata Emilia Kutowska</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="obj-divider"></div>
+
+    <!-- O2 -->
+    <div class="objective" id="o2">
+      <div class="obj-header">
+        <span class="obj-num o2">O2</span>
+        <h2 class="obj-title">Improve working models, payments, and rewards experience</h2>
+      </div>
+      <div class="krs">
+
+        <div class="kr-card o2" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR1</span>
+            <span class="kr-text">Streamlining scoring & loyalty: Design a unified cohesive rider growth path — a rewarding journey that makes riders feel like they're growing with the platform.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Target</div>
+                <div class="kr-meta-value">Concept design 100% done</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Deadline</div>
+                <div class="kr-meta-value">Q2 Jun / Q3 Jul</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Gohan Saxena</span></div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Collaborators</div>
+                <div class="chips"><span class="chip">Jorge Reyes Ferrero</span><span class="chip">Syed Mohammad Fahad</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card o2" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR2</span>
+            <span class="kr-text">Redesign working model: Design a seamless and scalable working model for multiple segments of riders with configurability for flexible and committed ones.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Target</div>
+                <div class="kr-meta-value">Working model design</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Deadline</div>
+                <div class="kr-meta-value">Q2 May–Jun</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Fang Lei</span></div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Collaborators</div>
+                <div class="chips"><span class="chip">Oliver Matten</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card o2" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR3</span>
+            <span class="kr-text">Zero Friction: Fix at least 25% of heuristic issues and QA friction points across every squad's core experience.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Target</div>
+                <div class="kr-meta-value">25% per squad</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Deadline</div>
+                <div class="kr-meta-value">Q3</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Fang Lei</span><span class="chip poc">Gohan Saxena</span></div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Collaborators</div>
+                <div class="chips"><span class="chip">Ning Orlina</span><span class="chip">Syed Mohammad Fahad</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card o2" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR4</span>
+            <span class="kr-text">UX Outreach: Identify at least 1 opportunity leveraging ops products' insights (central/regional) to improve workforce or rider experience for Q4 or 2027.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Fang Lei</span><span class="chip poc">Gohan Saxena</span></div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Collaborators</div>
+                <div class="chips"><span class="chip">Agata Emilia Kutowska</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="obj-divider"></div>
+
+    <!-- O3 -->
+    <div class="objective" id="o3">
+      <div class="obj-header">
+        <span class="obj-num o3">O3</span>
+        <h2 class="obj-title">Research</h2>
+      </div>
+      <div class="krs">
+
+        <div class="kr-card o3" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR1</span>
+            <span class="kr-text">Q3 result: "Preferred App" survey score and insights.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Target</div>
+                <div class="kr-meta-value">69.70 → TBD</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Deadline</div>
+                <div class="kr-meta-value">Q3 Aug</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Agata Emilia Kutowska</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card o3" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR2</span>
+            <span class="kr-text">China app (continued): Deep dive into 3 models — Algo dispatch, Loyalty program, Shift vs on-demand.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Deadline</div>
+                <div class="kr-meta-value">Q3</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Agata Emilia Kutowska</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card o3" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR3</span>
+            <span class="kr-text">Deliveries & Workforce research priorities: Consolidate research plan, priorities, and cadences.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Deadline</div>
+                <div class="kr-meta-value">Q3 Jul 6</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Agata Emilia Kutowska</span></div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Collaborators</div>
+                <div class="chips"><span class="chip">Irem Cakiroglu</span><span class="chip">Fang Lei</span><span class="chip">Gohan Saxena</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card o3" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR4</span>
+            <span class="kr-text">AI priority: Identify the most impactful touchpoint to empower the UX team to do more independent research, and collaborate to implement at least 1 solution.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Target</div>
+                <div class="kr-meta-value">Setup time −25% · Consult 100% by AI</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Deadline</div>
+                <div class="kr-meta-value">Q3</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip tbd">TBD</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="obj-divider"></div>
+
+    <!-- O4 -->
+    <div class="objective" id="o4">
+      <div class="obj-header">
+        <span class="obj-num o4">O4</span>
+        <h2 class="obj-title">Scaling Design System & Content / L10n</h2>
+      </div>
+      <div class="krs">
+
+        <div class="kr-card o4" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR</span>
+            <span class="kr-text">UX Writing: Launch L10n (localization) automation setup with Global Service.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Deadline</div>
+                <div class="kr-meta-value">Q3</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Irem Cakiroglu</span><span class="chip poc">Idil Düzgün</span></div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Collaborators</div>
+                <div class="chips"><span class="chip">Emilia Porfiri</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card o4" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR</span>
+            <span class="kr-text">UX Writing: Integrate UX copies into Design System + Automated office hours with AI.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Target</div>
+                <div class="kr-meta-value">X components · OH 100% by AI</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Idil Düzgün</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card o4" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR</span>
+            <span class="kr-text">AI tools: Set up shared infra for the design team, pilot more use cases, learn and iterate.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Target</div>
+                <div class="kr-meta-value">Tool adoption +25% · 100% initiative completion</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Deadline</div>
+                <div class="kr-meta-value">Q3</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Farid Motevalledinobar</span><span class="chip poc">Aditya Patil</span><span class="chip poc">Astha Agarwal</span><span class="chip poc">Mercedes Maria Fiz</span></div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Collaborators</div>
+                <div class="chips"><span class="chip">Wioleta Maj</span><span class="chip">Dom De Stefano</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card o4" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR</span>
+            <span class="kr-text">Zero Friction: Share monthly progress in "Win Market" monthly updates.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Deadline</div>
+                <div class="kr-meta-value">Q3 Jul, Aug, Sep</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Fang Lei</span><span class="chip poc">Dom De Stefano</span></div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Collaborators</div>
+                <div class="chips"><span class="chip">GPMs</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="obj-divider"></div>
+
+    <!-- O5 -->
+    <div class="objective" id="o5">
+      <div class="obj-header">
+        <span class="obj-num o5">O5</span>
+        <h2 class="obj-title">Becoming an AI-native UX team</h2>
+      </div>
+      <div class="krs">
+
+        <div class="kr-card o5" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR</span>
+            <span class="kr-text">Publish quarterly Rider UX priorities.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Target</div>
+                <div class="kr-meta-value">100% adoption in Rider UX team</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Deadline</div>
+                <div class="kr-meta-value">End of Jun</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card o5" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR</span>
+            <span class="kr-text">Design resources adjustment — Q3 design allocation approach.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Deadline</div>
+                <div class="kr-meta-value">Jun</div>
+              </div>
+              <div class="kr-meta">
+                <div class="kr-meta-label">Reference</div>
+                <div class="kr-meta-value"><a href="q3-design-allocation.html" style="color:var(--o5);">→ Q3 Design Allocation doc</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card o5" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR</span>
+            <span class="kr-text">Redesign the design process.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">UX POC</div>
+                <div class="chips"><span class="chip poc">Aditya Patil</span><span class="chip poc">Astha Agarwal</span><span class="chip poc">Mercedes Maria Fiz</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kr-card o5" onclick="toggleKR(this)">
+          <div class="kr-summary">
+            <span class="kr-label">KR</span>
+            <span class="kr-text">Launch headcount monitoring & growth monitoring.</span>
+            <svg class="kr-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
+          </div>
+          <div class="kr-detail">
+            <div class="kr-detail-inner">
+              <div class="kr-meta">
+                <div class="kr-meta-label">Deadline</div>
+                <div class="kr-meta-value">Q3</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <strong>Rider UX Team · Q3 2026</strong>
+    <br/><br/>
+    Questions? Start with your design manager: <strong>Irem, Fang, or Gohan</strong>.
+    For broader questions, reach out to <strong>Momo</strong>.
+  </footer>
+
+  <script>
+    function toggleKR(card) {
+      card.classList.toggle('open');
+    }
+
+    function goTo(id, btn) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+    }
+
+    // Auto-highlight nav on scroll
+    const sections = ['o1','o2','o3','o4','o5'];
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const idx = sections.indexOf(entry.target.id);
+          document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+            btn.classList.toggle('active', i === idx);
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+  </script>
+</body>
+</html>
