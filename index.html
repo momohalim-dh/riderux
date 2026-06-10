@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RiderUX Updates</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --surface-2: #22222e;
+      --border: rgba(255,255,255,0.08);
+      --accent: #7c6af7;
+      --accent-dim: rgba(124,106,247,0.15);
+      --green: #4ade80;
+      --green-dim: rgba(74,222,128,0.10);
+      --yellow: #fbbf24;
+      --yellow-dim: rgba(251,191,36,0.10);
+      --pink: #f472b6;
+      --pink-dim: rgba(244,114,182,0.10);
+      --cyan: #22d3ee;
+      --cyan-dim: rgba(34,211,238,0.10);
+      --text: #e8e8f0;
+      --muted: #8888a0;
+      --radius: 14px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* HERO */
+    .hero {
+      padding: 72px 24px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -100px; left: 50%; transform: translateX(-50%);
+      width: 560px; height: 560px;
+      background: radial-gradient(circle, rgba(124,106,247,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(124,106,247,0.3);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    h1 span { color: var(--accent); }
+    .hero-sub {
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    /* FILTERS */
+    .filter-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 32px 24px 0;
+    }
+    .filter-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 7px 16px;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
+    .filter-btn.active { color: #fff; }
+    .filter-btn[data-filter="all"].active    { background: var(--accent);  border-color: var(--accent); }
+    .filter-btn[data-filter="design"].active { background: rgba(124,106,247,0.25); border-color: var(--accent); color: var(--accent); }
+    .filter-btn[data-filter="research"].active { background: rgba(74,222,128,0.2); border-color: var(--green); color: var(--green); }
+    .filter-btn[data-filter="writers"].active  { background: rgba(251,191,36,0.2); border-color: var(--yellow); color: var(--yellow); }
+    .filter-btn[data-filter="design-system"].active { background: rgba(244,114,182,0.2); border-color: var(--pink); color: var(--pink); }
+    .filter-btn[data-filter="other"].active { background: rgba(34,211,238,0.2); border-color: var(--cyan); color: var(--cyan); }
+
+    .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .dot.design        { background: var(--accent); }
+    .dot.research      { background: var(--green); }
+    .dot.writers       { background: var(--yellow); }
+    .dot.design-system { background: var(--pink); }
+    .dot.other         { background: var(--cyan); }
+
+    /* GRID */
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .year-group { margin-top: 52px; }
+    .year-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      border-color: rgba(255,255,255,0.18);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .card-tag.design        { color: var(--accent); }
+    .card-tag.research      { color: var(--green); }
+    .card-tag.writers       { color: var(--yellow); }
+    .card-tag.design-system { color: var(--pink); }
+    .card-tag.other         { color: var(--cyan); }
+
+    .card-quarter {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .card p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      flex: 1;
+    }
+    .card-arrow {
+      font-size: 16px;
+      color: var(--muted);
+      align-self: flex-end;
+      transition: transform 0.2s, color 0.2s;
+    }
+    .card:hover .card-arrow { transform: translateX(3px); color: var(--text); }
+
+    /* stripe accent at top of card */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .card[data-team="design"]::before        { background: var(--accent); }
+    .card[data-team="research"]::before      { background: var(--green); }
+    .card[data-team="writers"]::before       { background: var(--yellow); }
+    .card[data-team="design-system"]::before { background: var(--pink); }
+    .card[data-team="other"]::before         { background: var(--cyan); }
+
+    /* EMPTY STATE */
+    .empty {
+      display: none;
+      text-align: center;
+      padding: 64px 24px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: 80px;
+      border-top: 1px solid var(--border);
+      padding: 28px 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer strong { color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="badge">RiderUX</div>
+    <h1>Updates &amp; <span>initiatives</span></h1>
+    <p class="hero-sub">Strategy docs, planning updates, and team initiatives — all in one place.</p>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all" onclick="filter('all', this)">All</button>
+    <button class="filter-btn" data-filter="design" onclick="filter('design', this)"><span class="dot design"></span>Design</button>
+    <button class="filter-btn" data-filter="research" onclick="filter('research', this)"><span class="dot research"></span>Research</button>
+    <button class="filter-btn" data-filter="writers" onclick="filter('writers', this)"><span class="dot writers"></span>Writers</button>
+    <button class="filter-btn" data-filter="design-system" onclick="filter('design-system', this)"><span class="dot design-system"></span>Design System</button>
+    <button class="filter-btn" data-filter="other" onclick="filter('other', this)"><span class="dot other"></span>Other</button>
+  </div>
+
+  <div class="container">
+    <div class="year-group" id="group-2026">
+      <div class="year-label">2026</div>
+      <div class="cards" id="cards-2026">
+
+        <a class="card" href="2026/q3-design-allocation.html" data-team="design">
+          <div class="card-top">
+            <span class="card-tag design"><span class="dot design"></span>Design</span>
+            <span class="card-quarter">Q3 2026</span>
+          </div>
+          <h3>Designing around priorities</h3>
+          <p>How we're shifting design allocation in Q3 — from permanent squad assignment to priority-driven capacity.</p>
+          <span class="card-arrow">→</span>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="empty" id="empty-state">No docs match this filter yet.</div>
+  </div>
+
+  <footer>
+    <strong>RiderUX</strong> &nbsp;·&nbsp; Questions? Reach out to your design manager or <strong>Momo</strong>.
+  </footer>
+
+  <script>
+    function filter(team, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const cards = document.querySelectorAll('.card');
+      let visible = 0;
+      cards.forEach(card => {
+        const show = team === 'all' || card.dataset.team === team;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      // hide year groups with no visible cards
+      document.querySelectorAll('.year-group').forEach(group => {
+        const anyVisible = [...group.querySelectorAll('.card')].some(c => c.style.display !== 'none');
+        group.style.display = anyVisible ? '' : 'none';
+      });
+
+      document.getElementById('empty-state').style.display = visible === 0 ? 'block' : 'none';
+    }
+  </script>
+</body>
+</html>

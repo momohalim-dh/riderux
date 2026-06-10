@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Designing around priorities — a Q3 update</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --surface-2: #22222e;
+      --border: rgba(255,255,255,0.08);
+      --accent: #7c6af7;
+      --accent-dim: rgba(124,106,247,0.15);
+      --accent-glow: rgba(124,106,247,0.35);
+      --green: #4ade80;
+      --green-dim: rgba(74,222,128,0.12);
+      --red: #f87171;
+      --red-dim: rgba(248,113,113,0.12);
+      --yellow: #fbbf24;
+      --yellow-dim: rgba(251,191,36,0.12);
+      --text: #e8e8f0;
+      --muted: #8888a0;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* --- HERO --- */
+    .hero {
+      padding: 80px 24px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -120px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(124,106,247,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(124,106,247,0.3);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+    .badge::before { content: '●'; font-size: 8px; }
+    h1 {
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    h1 span { color: var(--accent); }
+    .hero-sub {
+      color: var(--muted);
+      font-size: clamp(15px, 2vw, 18px);
+      max-width: 520px;
+      margin: 0 auto 48px;
+    }
+
+    /* --- LAYOUT --- */
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .section { margin-bottom: 72px; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 32px;
+    }
+
+    /* --- BEFORE / AFTER --- */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 640px) { .compare-grid { grid-template-columns: 1fr; } }
+
+    .compare-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .compare-card:hover { border-color: rgba(255,255,255,0.16); }
+    .compare-card.before { border-top: 3px solid var(--red); }
+    .compare-card.after  { border-top: 3px solid var(--green); }
+
+    .compare-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      border-radius: inherit;
+    }
+    .compare-card.before::before { background: var(--red-dim); }
+    .compare-card.after::before  { background: var(--green-dim); }
+
+    .compare-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .compare-card.before .compare-tag { color: var(--red); }
+    .compare-card.after  .compare-tag { color: var(--green); }
+
+    .compare-card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .compare-card p { font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+    .pain-list {
+      list-style: none;
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .pain-list li {
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .pain-list li::before {
+      content: attr(data-icon);
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: 12px;
+    }
+
+    /* --- PROCESS STEPS --- */
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+    }
+    .step:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-glow);
+    }
+    .step.open { border-color: var(--accent); }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 24px;
+    }
+    .step-num {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-title {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .step-chevron {
+      width: 20px; height: 20px;
+      color: var(--muted);
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+    .step.open .step-chevron { transform: rotate(180deg); }
+
+    .step-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .step.open .step-body { max-height: 400px; }
+    .step-body-inner {
+      padding: 0 24px 24px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+    .step-body-inner p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+    .step-body-inner .who {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(124,106,247,0.25);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-bottom: 12px;
+    }
+
+    /* --- ALLOCATION FLOW --- */
+    .flow {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+    }
+    .flow-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 28px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 11px;
+    }
+
+    .flow-nodes {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .flow-node {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      position: relative;
+    }
+    .flow-node:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px; top: 42px;
+      width: 2px;
+      height: calc(100% - 8px);
+      background: var(--border);
+    }
+    .flow-dot {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .flow-dot.squad  { background: rgba(124,106,247,0.15); border: 1.5px solid var(--accent); }
+    .flow-dot.domain { background: rgba(251,191,36,0.12);  border: 1.5px solid var(--yellow); }
+    .flow-dot.tribe  { background: rgba(74,222,128,0.12);  border: 1.5px solid var(--green); }
+
+    .flow-content { padding-bottom: 28px; padding-top: 8px; }
+    .flow-content h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .flow-content p  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .flow-level {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .flow-level.squad  { color: var(--accent); }
+    .flow-level.domain { color: var(--yellow); }
+    .flow-level.tribe  { color: var(--green); }
+
+    /* --- CALLOUT --- */
+    .callout {
+      background: var(--accent-dim);
+      border: 1px solid rgba(124,106,247,0.3);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-top: 32px;
+    }
+    .callout-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+    .callout h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .callout p  { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+    /* --- FOOTER --- */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer strong { color: var(--text); }
+
+    /* --- STICKY NAV --- */
+    .sticky-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      padding: 12px 24px;
+      background: rgba(15,15,19,0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+      gap: 8px;
+    }
+    .sticky-nav.scrolled { border-color: var(--border); }
+    .toggle-btn {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 18px;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .toggle-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+    .toggle-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="badge">A Q3 update</div>
+    <h1>Designing around<br><span>priorities</span></h1>
+    <p class="hero-sub">
+      Moving from permanent squad assignment to priority-driven allocation —
+      so design effort lands where it matters most.
+    </p>
+  </div>
+
+  <!-- STICKY NAV -->
+  <nav class="sticky-nav" id="sticky-nav">
+    <button class="toggle-btn active" onclick="goTo('compare', this)">What's changing</button>
+    <button class="toggle-btn" onclick="goTo('process', this)">The new process</button>
+    <button class="toggle-btn" onclick="goTo('flow', this)">How allocation works</button>
+  </nav>
+
+  <div class="container">
+
+    <!-- BEFORE / AFTER -->
+    <div class="section" id="compare">
+      <div class="section-label">The shift</div>
+      <h2 class="section-title">Before vs. Q3 approach</h2>
+
+      <div class="compare-grid">
+        <div class="compare-card before">
+          <div class="compare-tag">⬤ Before</div>
+          <h3>Permanent squad assignment</h3>
+          <p>Designers are locked to a single squad, regardless of what priorities look like across the domain or tribe.</p>
+          <ul class="pain-list">
+            <li data-icon="✕">Capacity doesn't follow impact</li>
+            <li data-icon="✕">High-priority initiatives can be under-resourced</li>
+            <li data-icon="✕">Almost no tribe-level prioritization in practice</li>
+            <li data-icon="✕">Domain priorities rarely surface to planning</li>
+          </ul>
+        </div>
+
+        <div class="compare-card after">
+          <div class="compare-tag">⬤ Q3 Approach</div>
+          <h3>Priority-driven allocation</h3>
+          <p>Designers default to their squad, but capacity can shift to higher-impact work at domain or tribe level when needed.</p>
+          <ul class="pain-list">
+            <li data-icon="✓">Allocation follows the highest-priority work</li>
+            <li data-icon="✓">Tribe-level view surfaces cross-domain needs</li>
+            <li data-icon="✓">Squads still get their designer as a baseline</li>
+            <li data-icon="✓">Flexibility without losing predictability</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROCESS STEPS -->
+    <div class="section" id="process">
+      <div class="section-label">Q Planning process</div>
+      <h2 class="section-title">Three steps, same planning day</h2>
+      <p style="color: var(--muted); font-size: 15px; margin-bottom: 32px;">
+        The overall Q planning approach stays the same — these are minor, targeted adjustments.
+      </p>
+
+      <div class="steps">
+
+        <div class="step" onclick="toggleStep(this)">
+          <div class="step-header">
+            <div class="step-num">1</div>
+            <div class="step-title">Define squad-level priorities</div>
+            <svg class="step-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 7.5l5 5 5-5"/>
+            </svg>
+          </div>
+          <div class="step-body">
+            <div class="step-body-inner">
+              <div class="who">📋 Squad + Designer</div>
+              <p>
+                On planning day, each squad defines and ranks their design initiatives.
+                This gives us a clear starting point — the designer's default assignment is their squad,
+                and squad-level work is the baseline expectation.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="step" onclick="toggleStep(this)">
+          <div class="step-header">
+            <div class="step-num">2</div>
+            <div class="step-title">Rank priorities at domain &amp; tribe level</div>
+            <svg class="step-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 7.5l5 5 5-5"/>
+            </svg>
+          </div>
+          <div class="step-body">
+            <div class="step-body-inner">
+              <div class="who">🤝 Design Manager + GPMs → Momo + Tribe Leader → Fabian</div>
+              <p>
+                Design initiatives across all squads are reviewed jointly by the
+                <strong style="color: var(--text);">Design Manager and GPMs</strong> to establish
+                <strong style="color: var(--text);">domain-level priorities</strong>.
+              </p>
+              <br/>
+              <p>
+                Once domain priorities are set, they're reviewed by
+                <strong style="color: var(--text);">Momo and the Tribe Leader</strong> to determine tribe-level priorities,
+                then aligned with <strong style="color: var(--text);">Fabian</strong>.
+                If there are any conflicts at the tribe level,
+                <strong style="color: var(--text);">Fabian is the final decision maker</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="step" onclick="toggleStep(this)">
+          <div class="step-header">
+            <div class="step-num">3</div>
+            <div class="step-title">Allocate designers to top priorities</div>
+            <svg class="step-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 7.5l5 5 5-5"/>
+            </svg>
+          </div>
+          <div class="step-body">
+            <div class="step-body-inner">
+              <div class="who">📐 Design Lead</div>
+              <p>
+                Starting from the tribe-level priority list, designers are assigned beginning with
+                their default squad. If a higher-impact initiative exists elsewhere and the squad's
+                designer is at capacity, another designer steps in. This cascades from domain to
+                tribe level as needed.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ALLOCATION FLOW -->
+    <div class="section" id="flow">
+      <div class="section-label">Allocation logic</div>
+      <h2 class="section-title">How a designer gets assigned</h2>
+
+      <div class="flow">
+        <div class="flow-title">Priority cascade — squad → domain → tribe</div>
+        <div class="flow-nodes">
+
+          <div class="flow-node">
+            <div class="flow-dot squad">🎯</div>
+            <div class="flow-content">
+              <div class="flow-level squad">Squad level · Default</div>
+              <h4>Designer assigned to their home squad</h4>
+              <p>Every designer starts here. Squad work is the baseline — designers own their squad's design initiatives unless capacity needs rebalancing.</p>
+            </div>
+          </div>
+
+          <div class="flow-node">
+            <div class="flow-dot domain">⚡</div>
+            <div class="flow-content">
+              <div class="flow-level domain">Domain level · When needed</div>
+              <h4>Higher-impact initiative, no squad designer capacity</h4>
+              <p>If a top-ranked initiative in the domain can't be covered by that squad's designer (already at capacity), another designer within the domain steps in to take it over.</p>
+            </div>
+          </div>
+
+          <div class="flow-node">
+            <div class="flow-dot tribe">🌐</div>
+            <div class="flow-content">
+              <div class="flow-level tribe">Tribe level · When needed</div>
+              <h4>High-priority initiative crossing domains</h4>
+              <p>If the highest-priority work sits across domains and no squad designer has capacity, allocation is applied at the tribe level — moving a designer across domain boundaries to cover the most impactful work.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-icon">💡</div>
+        <div>
+          <h4>What this isn't</h4>
+          <p>
+            This isn't a complete restructure. Designers still have a home squad and default assignment.
+            The flexibility only kicks in when priorities clearly warrant it — and only after being
+            validated at domain and tribe level with GPMs and Momo.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <strong>Design Team · Q3 2026</strong>
+    <br/><br/>
+    Questions about your squad or domain? Start with your design manager:
+    <strong>Irem, Fang, or Gohan</strong>.
+    <br/>
+    For more fundamental or broader questions, reach out to <strong>Momo</strong>.
+  </footer>
+
+  <script>
+    const nav = document.getElementById('sticky-nav');
+
+    // Show border once user scrolls past hero
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 10);
+    });
+
+    // Highlight active nav button based on scroll position
+    const sections = ['compare', 'process', 'flow'];
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          document.querySelectorAll('.toggle-btn').forEach((btn, i) => {
+            btn.classList.toggle('active', sections[i] === id);
+          });
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    function goTo(id, btn) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+    }
+
+    function toggleStep(el) {
+      el.classList.toggle('open');
+    }
+  </script>
+</body>
+</html>
