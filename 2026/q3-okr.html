@@ -180,6 +180,7 @@
       top: 0;
       z-index: 100;
       display: flex;
+      align-items: center;
       justify-content: center;
       gap: 6px;
       flex-wrap: wrap;
@@ -189,6 +190,21 @@
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
     }
+    .nav-divider { width: 1px; height: 16px; background: var(--border); margin: 0 2px; }
+    .nav-toggle-all {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+    .nav-toggle-all:hover { color: var(--text); background: rgba(255,255,255,0.06); }
     .nav-btn {
       display: flex;
       align-items: center;
@@ -227,7 +243,10 @@
       align-items: flex-start;
       gap: 14px;
       margin-bottom: 14px;
+      cursor: pointer;
+      user-select: none;
     }
+    .obj-header:hover .obj-title { opacity: 0.75; }
     .obj-num {
       flex-shrink: 0;
       font-size: 10px;
@@ -249,10 +268,28 @@
       font-weight: 700;
       letter-spacing: -0.01em;
       line-height: 1.25;
+      flex: 1;
+      transition: opacity 0.15s;
     }
+    .obj-chevron {
+      width: 18px; height: 18px;
+      color: var(--muted);
+      flex-shrink: 0;
+      margin-top: 4px;
+      transition: transform 0.25s;
+    }
+    .objective.collapsed .obj-chevron { transform: rotate(-90deg); }
+    .krs-wrap {
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.3s ease;
+      overflow: hidden;
+    }
+    .objective.collapsed .krs-wrap { grid-template-rows: 0fr; }
+    .krs-inner { min-height: 0; }
 
     /* KR CARDS */
-    .krs { display: flex; flex-direction: column; gap: 10px; }
+    .krs { display: flex; flex-direction: column; gap: 10px; padding-bottom: 2px; }
 
     .kr-card {
       background: var(--surface);
@@ -372,17 +409,20 @@
     <button class="nav-btn" data-o="4" onclick="goTo('o4',this)"><span class="dot o4"></span>Design System & Content</button>
     <button class="nav-btn" data-o="5" onclick="goTo('o5',this)"><span class="dot o5"></span>AI-native</button>
     <button class="status-restore" id="status-restore" onclick="restoreStatus()" title="Show status"><span class="status-restore-dot"></span>WIP</button>
+    <div class="nav-divider"></div>
+    <button class="nav-toggle-all" id="toggle-all-btn" onclick="toggleAll()">Collapse all</button>
   </nav>
 
   <div class="container">
 
     <!-- O1 -->
     <div class="objective" id="o1">
-      <div class="obj-header">
+      <div class="obj-header" onclick="toggleObj(this.closest('.objective'))">
         <span class="obj-num o1">O1</span>
         <h2 class="obj-title">Improve core rider experiences</h2>
+        <svg class="obj-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
       </div>
-      <div class="krs">
+      <div class="krs-wrap"><div class="krs-inner"><div class="krs">
 
         <div class="kr-card o1 updated">
           <div class="kr-top">
@@ -418,6 +458,7 @@
             <div class="meta-item"><span class="meta-key">With</span><span class="meta-val">Agata Emilia Kutowska</span></div>
           </div>
         </div>
+      </div></div>
 
       </div>
     </div>
@@ -426,11 +467,12 @@
 
     <!-- O2 -->
     <div class="objective" id="o2">
-      <div class="obj-header">
+      <div class="obj-header" onclick="toggleObj(this.closest('.objective'))">
         <span class="obj-num o2">O2</span>
         <h2 class="obj-title">Improve working models, payments, and rewards experience</h2>
+        <svg class="obj-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
       </div>
-      <div class="krs">
+      <div class="krs-wrap"><div class="krs-inner"><div class="krs">
 
         <div class="kr-card o2">
           <div class="kr-top">
@@ -481,6 +523,7 @@
             <div class="meta-item"><span class="meta-key">With</span><span class="meta-val">Agata Emilia Kutowska</span></div>
           </div>
         </div>
+      </div></div>
 
       </div>
     </div>
@@ -489,11 +532,12 @@
 
     <!-- O3 -->
     <div class="objective" id="o3">
-      <div class="obj-header">
+      <div class="obj-header" onclick="toggleObj(this.closest('.objective'))">
         <span class="obj-num o3">O3</span>
         <h2 class="obj-title">Research</h2>
+        <svg class="obj-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
       </div>
-      <div class="krs">
+      <div class="krs-wrap"><div class="krs-inner"><div class="krs">
 
         <div class="kr-card o3">
           <div class="kr-top">
@@ -542,6 +586,7 @@
             <div class="meta-item"><span class="meta-key">POC</span><span class="meta-val" style="color:var(--muted-2);font-style:italic;">TBD</span></div>
           </div>
         </div>
+      </div></div>
 
       </div>
     </div>
@@ -550,11 +595,12 @@
 
     <!-- O4 -->
     <div class="objective" id="o4">
-      <div class="obj-header">
+      <div class="obj-header" onclick="toggleObj(this.closest('.objective'))">
         <span class="obj-num o4">O4</span>
         <h2 class="obj-title">Scaling Design System & Content / L10n</h2>
+        <svg class="obj-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
       </div>
-      <div class="krs">
+      <div class="krs-wrap"><div class="krs-inner"><div class="krs">
 
         <div class="kr-card o4">
           <div class="kr-top">
@@ -603,6 +649,7 @@
             <div class="meta-item"><span class="meta-key">With</span><span class="meta-val">GPMs</span></div>
           </div>
         </div>
+      </div></div>
 
       </div>
     </div>
@@ -611,11 +658,12 @@
 
     <!-- O5 -->
     <div class="objective" id="o5">
-      <div class="obj-header">
+      <div class="obj-header" onclick="toggleObj(this.closest('.objective'))">
         <span class="obj-num o5">O5</span>
         <h2 class="obj-title">Becoming an AI-native UX team</h2>
+        <svg class="obj-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7.5l5 5 5-5"/></svg>
       </div>
-      <div class="krs">
+      <div class="krs-wrap"><div class="krs-inner"><div class="krs">
 
         <div class="kr-card o5">
           <div class="kr-top">
@@ -659,6 +707,7 @@
             <div class="meta-item"><span class="meta-key">Deadline</span><span class="meta-val">Q3</span></div>
           </div>
         </div>
+      </div></div>
 
       </div>
     </div>
@@ -673,9 +722,32 @@
 
   <script>
     function goTo(id, btn) {
-      document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const obj = document.getElementById(id);
+      if (obj.classList.contains('collapsed')) {
+        obj.classList.remove('collapsed');
+        updateToggleAllBtn();
+      }
+      obj.scrollIntoView({ behavior: 'smooth', block: 'start' });
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+    }
+
+    function toggleObj(obj) {
+      obj.classList.toggle('collapsed');
+      updateToggleAllBtn();
+    }
+
+    function toggleAll() {
+      const objectives = document.querySelectorAll('.objective');
+      const anyOpen = [...objectives].some(o => !o.classList.contains('collapsed'));
+      objectives.forEach(o => o.classList.toggle('collapsed', anyOpen));
+      updateToggleAllBtn();
+    }
+
+    function updateToggleAllBtn() {
+      const objectives = document.querySelectorAll('.objective');
+      const anyOpen = [...objectives].some(o => !o.classList.contains('collapsed'));
+      document.getElementById('toggle-all-btn').textContent = anyOpen ? 'Collapse all' : 'Expand all';
     }
 
     function dismissStatus() {
