@@ -53,19 +53,17 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      max-width: 860px;
-      margin: 0 auto 20px;
-      padding: 10px 14px 10px 16px;
-      background: rgba(251,191,36,0.07);
-      border: 1px solid rgba(251,191,36,0.22);
-      border-radius: 10px;
-      transition: opacity 0.3s, max-height 0.35s, margin 0.3s, padding 0.3s;
+      width: 100%;
+      padding: 8px 24px;
+      background: rgba(251,191,36,0.08);
+      border-bottom: 1px solid rgba(251,191,36,0.18);
+      transition: max-height 0.3s ease, padding 0.3s, opacity 0.3s;
       overflow: hidden;
+      max-height: 60px;
     }
     .status-banner.hidden {
       opacity: 0;
       max-height: 0;
-      margin-bottom: 0;
       padding-top: 0;
       padding-bottom: 0;
       pointer-events: none;
@@ -375,9 +373,16 @@
 </head>
 <body>
 
+  <!-- STATUS BANNER — top of page -->
+  <div class="status-banner" id="status-banner">
+    <span class="status-dot"></span>
+    <span class="status-text"><strong>Work in progress</strong> — target to finalize everything end of Jun. Main POC is @Momo (Monika Halim).</span>
+    <button class="status-dismiss" onclick="dismissStatus()" title="Dismiss">×</button>
+  </div>
+
   <div class="hero">
     <h1>Rider UX Team — <span>OKR Q3 2026</span></h1>
-    <p class="hero-sub">Objectives and key results across design, research, writers, and design system.</p>
+    <p class="hero-sub">Every initiative here moves us closer to becoming the preferred app for every rider.</p>
   </div>
 
   <div class="stats">
@@ -387,18 +392,8 @@
         <span class="stats-sep">·</span>
         <strong>14</strong> Key Results
         <span class="stats-sep">·</span>
-        Q3 2026
+        Updated 10.06.2026
       </div>
-      <div class="stats-updated">Last updated Jun 10, 2026</div>
-    </div>
-  </div>
-
-  <!-- STATUS BANNER -->
-  <div class="container" style="padding-bottom:0;">
-    <div class="status-banner" id="status-banner">
-      <span class="status-dot"></span>
-      <span class="status-text"><strong>Work in progress</strong> — target to finalize everything end of Jun. Main POC is @Momo (Monika Halim).</span>
-      <button class="status-dismiss" onclick="dismissStatus()" title="Dismiss">×</button>
     </div>
   </div>
 
@@ -758,7 +753,7 @@
     function restoreStatus() {
       document.getElementById('status-banner').classList.remove('hidden');
       document.getElementById('status-restore').classList.remove('visible');
-      document.getElementById('status-banner').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     const sections = ['o1','o2','o3','o4','o5'];
