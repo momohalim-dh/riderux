@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rider UX × AI: A Starting Point</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+
+  /* ── Mode toggle ── */
+  .mode-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 24px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid #e2e0db;
+    transition: background 0.3s, border-color 0.3s;
+  }
+
+  body.dark .mode-bar {
+    background: rgba(13,13,18,0.92);
+    border-color: #252530;
+  }
+
+  .mode-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+    background: transparent;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mode-btn.active {
+    background: #111;
+    border-color: #111;
+    color: #fff;
+  }
+
+  body.dark .mode-btn { border-color: #2a2a38; color: #555; }
+  body.dark .mode-btn.active { background: #fff; border-color: #fff; color: #111; }
+
+  /* ── Light ── */
+  :root {
+    --bg: #f5f4f0;
+    --ink: #0f0f0f;
+    --ink-2: #2e2e2e;
+    --ink-3: #666666;
+    --ink-4: #999999;
+    --rule: #dddbd6;
+    --rule-soft: #eae8e4;
+    --accent: #5b3fcf;
+    --accent-light: #ede8ff;
+    --accent-rule: #c8b5f5;
+    --green: #1a7d5e;
+    --green-light: #e4f7f0;
+    --green-rule: #b0ddd0;
+    --amber: #a05200;
+    --amber-light: #fff3e8;
+    --cover-rule: #0f0f0f;
+    --step-bg: #ede8ff;
+    --step-border: #c8b5f5;
+    --section-label-color: #5b3fcf;
+  }
+
+  /* ── Dark ── */
+  body.dark {
+    --bg: #0d0d12;
+    --ink: #f2f1f5;
+    --ink-2: #c8c6d4;
+    --ink-3: #9090a8;
+    --ink-4: #6060788;
+    --rule: #282838;
+    --rule-soft: #1e1e2c;
+    --accent: #b898ff;
+    --accent-light: #1c1630;
+    --accent-rule: #3a2a60;
+    --green: #40d4a0;
+    --green-light: #0c201a;
+    --green-rule: #1a4038;
+    --amber: #f0a050;
+    --amber-light: #1c1008;
+    --cover-rule: #f2f1f5;
+    --step-bg: #1c1630;
+    --step-border: #3a2a60;
+    --section-label-color: #b898ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* No page frame — just centered content */
+  .page {
+    max-width: 1040px;
+    margin: 56px auto 96px;
+    padding: 0 64px;
+  }
+
+  @media (max-width: 680px) {
+    .page { padding: 0 20px; margin: 32px auto 64px; }
+  }
+
+  /* ── Cover ── */
+  .cover {
+    padding-bottom: 36px;
+    margin-bottom: 48px;
+    border-bottom: 2px solid var(--cover-rule);
+    transition: border-color 0.3s;
+  }
+
+  .cover-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 18px;
+  }
+
+  .cover h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .cover h1 .sub {
+    display: block;
+    font-weight: 500;
+    font-size: 24px;
+    color: var(--ink-3);
+    letter-spacing: -0.02em;
+    margin-top: 4px;
+  }
+
+  .cover-sub {
+    margin-top: 18px;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--ink-2);
+    line-height: 1.65;
+    max-width: 72ch;
+    text-wrap: balance;
+  }
+
+  /* ── Sections ── */
+  .section {
+    margin-bottom: 48px;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--section-label-color);
+    margin-bottom: 10px;
+    font-weight: 400;
+    opacity: 1;
+  }
+
+  .section h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 23px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 14px;
+    line-height: 1.2;
+  }
+
+  .section p {
+    font-size: 14.5px;
+    font-weight: 400;
+    color: var(--ink-2);
+    line-height: 1.75;
+    margin-bottom: 12px;
+  }
+
+  .section p:last-child { margin-bottom: 0; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--rule-soft);
+    margin: 48px 0;
+  }
+
+  /* ── Maturity ladder ── */
+  .maturity {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 20px 0;
+  }
+
+  .tier {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 14px 12px;
+    transition: background 0.3s, border-color 0.3s;
+  }
+
+  .tier.current { border-color: var(--accent-rule); background: var(--accent-light); }
+  .tier.target { border-color: var(--green-rule); background: var(--green-light); }
+
+  .tier-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    margin-bottom: 5px;
+  }
+
+  .tier-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .tier-desc {
+    font-size: 12.5px;
+    font-weight: 400;
+    color: var(--ink-3);
+    line-height: 1.5;
+  }
+
+  .tier.current .tier-num, .tier.current .tier-name { color: var(--accent); }
+  .tier.target .tier-num, .tier.target .tier-name { color: var(--green); }
+
+  .tier-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 2px;
+    display: inline-block;
+    margin-top: 8px;
+  }
+
+  .tier.current .tier-tag { background: #3a2880; color: #c8b8ff; }
+  .tier.target .tier-tag { background: #0d4032; color: #6edbb8; }
+
+  /* ── Moat grid ── */
+  .moat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin: 18px 0;
+  }
+
+  .moat-card {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 16px 18px;
+    transition: background 0.3s, border-color 0.3s;
+  }
+
+  .moat-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+
+  .moat-desc {
+    font-size: 12.5px;
+    font-weight: 400;
+    color: var(--ink-3);
+    line-height: 1.6;
+  }
+
+  /* ── Workflow ── */
+  .workflow {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 18px 0;
+  }
+
+  .workflow-col { border-top: 2px solid var(--rule); padding-top: 14px; }
+  .workflow-col.design { border-color: var(--accent); }
+  .workflow-col.research { border-color: var(--green); }
+  .workflow-col.content { border-color: var(--amber); }
+
+  .workflow-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .workflow-col.design .workflow-label { color: var(--accent); }
+  .workflow-col.research .workflow-label { color: var(--green); }
+  .workflow-col.content .workflow-label { color: var(--amber); }
+
+  .workflow-item {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--ink-2);
+    line-height: 1.55;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .workflow-item:last-child { border-bottom: none; }
+
+  .tag {
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 5px;
+    border-radius: 2px;
+  }
+
+  .tag.ai { background: var(--accent-light); color: var(--accent); }
+  .tag.human { background: var(--green-light); color: var(--green); }
+
+  /* ── Orientations ── */
+  .orientations {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 18px 0;
+  }
+
+  .orientation-card {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 18px 20px;
+    transition: background 0.3s, border-color 0.3s;
+  }
+
+  .orientation-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 8px;
+  }
+
+  .orientation-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .orientation-items {
+    list-style: none;
+    padding: 0;
+  }
+
+  .orientation-items li {
+    font-size: 12.5px;
+    font-weight: 400;
+    color: var(--ink-3);
+    line-height: 1.55;
+    padding: 4px 0 4px 14px;
+    border-bottom: 1px solid var(--rule-soft);
+    position: relative;
+  }
+
+  .orientation-items li:last-child { border-bottom: none; }
+
+  .orientation-items li::before {
+    content: '/';
+    position: absolute;
+    left: 0;
+    color: var(--rule);
+  }
+
+  .orientation-note {
+    font-size: 12.5px;
+    font-weight: 400;
+    color: var(--ink-3);
+    font-style: italic;
+    margin-top: 12px;
+    line-height: 1.65;
+  }
+
+  /* ── Pull ── */
+  .pull {
+    border-left: 3px solid var(--accent);
+    padding: 10px 18px;
+    margin: 20px 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  /* ── Bullet list for org section ── */
+  .org-bullets {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+  }
+
+  .org-bullets li {
+    font-size: 14.5px;
+    font-weight: 400;
+    color: var(--ink-2);
+    line-height: 1.7;
+    padding: 10px 0 10px 20px;
+    border-bottom: 1px solid var(--rule-soft);
+    position: relative;
+  }
+
+  .org-bullets li:last-child { border-bottom: none; }
+
+  .org-bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.6;
+  }
+
+  /* ── Next steps ── */
+  .nextsteps {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 18px 0;
+  }
+
+  .step-card {
+    background: var(--step-bg);
+    border: 1px solid var(--step-border);
+    border-radius: 4px;
+    padding: 20px 22px;
+    transition: background 0.3s, border-color 0.3s;
+  }
+
+  .step-card.full-width {
+    grid-column: 1 / -1;
+    background: var(--step-bg);
+    border-color: var(--step-border);
+  }
+
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .step-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 8px;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  .step-desc {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-2);
+    line-height: 1.65;
+  }
+
+  .step-link {
+    display: inline-block;
+    margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-rule);
+    padding-bottom: 1px;
+    opacity: 0.85;
+  }
+
+  .step-link:hover { opacity: 1; }
+
+  /* ── Step bullets ── */
+  .step-bullets {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0;
+  }
+
+  .step-bullets li {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-2);
+    line-height: 1.6;
+    padding: 4px 0 4px 14px;
+    border-bottom: 1px solid var(--rule-soft);
+    position: relative;
+  }
+
+  .step-bullets li:last-child { border-bottom: none; }
+
+  .step-bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.5;
+  }
+
+  /* ── Priority themes ── */
+  .prio-themes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .prio-theme {
+    background: var(--rule-soft);
+    border-radius: 3px;
+    padding: 12px 14px;
+  }
+
+  body.dark .prio-theme {
+    background: rgba(255,255,255,0.04);
+  }
+
+  .prio-theme-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 2px;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  .prio-theme-sub {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--ink-3);
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+
+  .prio-items {
+    list-style: none;
+    padding: 0;
+  }
+
+  .prio-items li {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--ink-3);
+    padding: 3px 0 3px 12px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .prio-items li::before {
+    content: '/';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    opacity: 0.5;
+    font-size: 11px;
+  }
+
+  /* ── Transition note ── */
+  .transition-note {
+    background: var(--rule-soft);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin-top: 12px;
+  }
+
+  .transition-note p {
+    font-size: 13px !important;
+    color: var(--ink-3) !important;
+    line-height: 1.65;
+    margin-bottom: 0 !important;
+  }
+
+  /* ── Questions ── */
+  .questions { margin-top: 18px; }
+
+  .questions ol {
+    list-style: none;
+    counter-reset: q;
+    padding: 0;
+  }
+
+  .questions ol li {
+    counter-increment: q;
+    font-size: 14.5px;
+    font-weight: 400;
+    color: var(--ink-2);
+    line-height: 1.65;
+    padding: 12px 0 12px 30px;
+    position: relative;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .questions ol li:last-child { border-bottom: none; }
+
+  .questions ol li::before {
+    content: counter(q);
+    position: absolute;
+    left: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    top: 14px;
+  }
+
+  /* ── Closing ── */
+  .closing {
+    margin-top: 48px;
+    padding-top: 28px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .closing p {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ink-3);
+    line-height: 1.7;
+  }
+
+  /* ── From-to highlight ── */
+  .from-to-highlight {
+    font-family: 'Outfit', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    margin: 14px 0 20px;
+  }
+
+  /* ── Timeline track label ── */
+  .timeline-track-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  /* ── Timeline ── */
+  .timeline {
+    display: flex;
+    gap: 0;
+    margin: 20px 0;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .timeline-col {
+    flex: 1;
+    padding: 18px 20px;
+  }
+
+  .timeline-divider {
+    width: 1px;
+    background: var(--rule);
+    flex-shrink: 0;
+  }
+
+  .timeline-header { margin-bottom: 14px; }
+
+  .timeline-q {
+    font-family: 'Outfit', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin-bottom: 5px;
+  }
+
+  .timeline-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .timeline-items {
+    list-style: none;
+    padding: 0;
+  }
+
+  .timeline-items li {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ink-2);
+    line-height: 1.6;
+    padding: 6px 0 6px 14px;
+    border-bottom: 1px solid var(--rule-soft);
+    position: relative;
+  }
+
+  .timeline-items li:last-child { border-bottom: none; }
+
+  .timeline-items li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+
+  .pandora-credit {
+    font-size: 11.5px !important;
+    font-weight: 400;
+    color: var(--ink-3) !important;
+    font-style: italic;
+    margin-top: 14px !important;
+    margin-bottom: 18px !important;
+    line-height: 1.5;
+  }
+
+  .pandora-credit a {
+    color: var(--ink-3);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .pandora-credit a:hover { color: var(--accent); border-color: var(--accent-rule); }
+
+  .role-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 14px;
+  }
+
+  .role-col-head {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  /* ── Accordions ── */
+  .accordions {
+    margin: 16px 0 0;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .accordion {
+    border-bottom: 1px solid var(--rule);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .accordion:last-child { border-bottom: none; }
+
+  .accordion:hover { background: rgba(255,255,255,0.03); }
+
+  .accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    user-select: none;
+  }
+
+  .accordion-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .accordion-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+
+  .accordion-theme {
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .accordion-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .accordion-arrow {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--ink-3);
+    transition: transform 0.25s;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .accordion.open .accordion-arrow {
+    transform: rotate(45deg);
+    color: var(--accent);
+  }
+
+  .accordion-body {
+    display: none;
+    padding: 0 20px 18px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .accordion.open .accordion-body { display: block; }
+
+  .accordion-subtitle {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-3);
+    line-height: 1.6;
+    margin-bottom: 12px;
+    padding-top: 14px;
+    font-style: italic;
+  }
+
+  .accordion-desc {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ink-2);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .initiative-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    font-weight: 400;
+  }
+
+  .initiative-tag.q3 {
+    background: var(--accent-light);
+    color: var(--accent);
+    border: 1px solid var(--accent-rule);
+  }
+
+  .initiative-tag.ongoing {
+    background: var(--green-light);
+    color: var(--green);
+    border: 1px solid var(--green-rule);
+  }
+
+  /* ── Sticky nav ── */
+  .sticky-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .nav-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.08); color: var(--ink-2); }
+  .nav-item.active { color: #ffffff; background: #2e2060; }
+
+  /* ── Sticky header ── */
+  .sticky-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    transform: translateY(-100%);
+    z-index: 100;
+    background: #1a1924;
+    border-bottom: 1px solid #2e2a42;
+    transition: transform 0.3s ease;
+  }
+
+  .sticky-header.visible {
+    transform: translateY(0);
+  }
+
+  .sticky-header-inner {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 11px 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sticky-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .sticky-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+</style>
+</head>
+<body class="dark">
+
+<div class="sticky-header" id="stickyHeader">
+  <div class="sticky-header-inner">
+    <div style="display: flex; align-items: center; gap: 14px; flex-shrink: 0;">
+      <span class="sticky-title">Rider UX in the age of AI</span>
+      <span class="sticky-meta">Early thinking · June 2026</span>
+    </div>
+    <nav class="sticky-nav">
+      <a class="nav-item" href="#sec-now" onclick="smoothScroll(event,'sec-now')">Now & next</a>
+      <a class="nav-item" href="#sec-moat" onclick="smoothScroll(event,'sec-moat')">The UX moat</a>
+      <a class="nav-item" href="#sec-roles" onclick="smoothScroll(event,'sec-roles')">Roles</a>
+      <a class="nav-item" href="#sec-orientations" onclick="smoothScroll(event,'sec-orientations')">Orientations</a>
+      <a class="nav-item" href="#sec-org" onclick="smoothScroll(event,'sec-org')">Org</a>
+      <a class="nav-item" href="#sec-questions" onclick="smoothScroll(event,'sec-questions')">Questions</a>
+    </nav>
+  </div>
+</div>
+<div class="page">
+
+  <!-- Cover -->
+  <div class="cover">
+    <div class="cover-label">Rider UX · First draft · June 2026</div>
+    <h1>Rider UX in the age of AI<span class="sub">early thinking</span></h1>
+    <p class="cover-sub">This is a first draft on a big topic. It lays out where we are, what we think is worth exploring, and what we want to align with Rider PL direction.</p>
+  </div>
+
+  <!-- Combined: where we are + near-term direction -->
+  <div class="section" id="sec-now">
+    <div class="section-label">Now & next</div>
+    <h2>From individuals experimenting to collective effort.</h2>
+    <p>Rider UX has individuals already experimenting with AI: building plugins, running research faster, generating code. But these efforts are unstructured and independent.</p>
+
+    <div class="maturity">
+      <div class="tier current">
+        <div class="tier-num">Stage 01</div>
+        <div class="tier-name">AI Adopter</div>
+        <div class="tier-desc">I know how to use AI at work safely and efficiently.</div>
+        <div class="tier-tag">We are here</div>
+      </div>
+      <div class="tier target">
+        <div class="tier-num">Stage 02</div>
+        <div class="tier-name">AI Navigator</div>
+        <div class="tier-desc">I'm refining my daily output and reducing manual workload with AI.</div>
+        <div class="tier-tag">Next direction</div>
+      </div>
+      <div class="tier">
+        <div class="tier-num">Stage 03</div>
+        <div class="tier-name">AI Architect</div>
+        <div class="tier-desc">I'm building systems that transform my team's workflow and ways of working.</div>
+      </div>
+      <div class="tier">
+        <div class="tier-num">Stage 04</div>
+        <div class="tier-name">AI Strategist</div>
+        <div class="tier-desc">I'm redesigning how we operate as a business with AI.</div>
+      </div>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-col" style="flex: 1;">
+        <div class="timeline-header">
+          <div class="timeline-q">Q3 and Q4 2026</div>
+          <div class="timeline-tag">Groundwork & preparation</div>
+        </div>
+        <ul class="timeline-items">
+          <li>Identify opportunities to integrate AI in current design process</li>
+          <li>Clarify direction and align commitment across functions</li>
+          <li>Create Rider UX × AI roadmap</li>
+          <li>Key insights and opportunities to build toward 2027 product strategy</li>
+          <li>Continue improving team assignment for priority-driven allocation</li>
+        </ul>
+      </div>
+    </div>
+
+    <p style="font-size: 14px; color: var(--ink-3); margin-top: 20px;">The initiatives we're prioritizing for Q3.</p>
+
+    <div class="accordions">
+
+      <div class="accordion" onclick="toggleAccordion(this)">
+        <div class="accordion-header">
+          <div class="accordion-left">
+            <div class="accordion-num">01</div>
+            <div class="accordion-theme">Accelerating Design System</div>
+          </div>
+          <div class="accordion-right">
+            <span class="initiative-tag q3">Q3</span>
+            <div class="accordion-arrow">+</div>
+          </div>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-subtitle">From "engineer builds" to "designer drafts with AI, engineer reviews"</div>
+          <ul class="step-bullets">
+            <li>Designers use AI tools like Claude Code to draft components</li>
+            <li>Engineers review and merge rather than build from scratch</li>
+            <li>Moves work upstream and reduces engineering dependency</li>
+            <li>Builds AI fluency through practice, not training</li>
+            <li>Requires alignment with product and engineering from the start</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion" onclick="toggleAccordion(this)">
+        <div class="accordion-header">
+          <div class="accordion-left">
+            <div class="accordion-num">02</div>
+            <div class="accordion-theme">Mapping AI integration investment opportunity</div>
+          </div>
+          <div class="accordion-right">
+            <span class="initiative-tag q3">Q3</span>
+            <div class="accordion-arrow">+</div>
+          </div>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-subtitle">Map the new workflow across all UX disciplines</div>
+          <ul class="step-bullets">
+            <li>A working session, not a training session</li>
+            <li>Goes deep across research, design, and content</li>
+            <li>Produces a shared workflow map we can iterate from</li>
+            <li>Output feeds into role expectations and cross-functional alignment</li>
+            <li>Sets what we commit to for Q4 and into 2027</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion" onclick="toggleAccordion(this)">
+        <div class="accordion-header">
+          <div class="accordion-left">
+            <div class="accordion-num">03</div>
+            <div class="accordion-theme">Priority-driven team capacity & structure</div>
+          </div>
+          <div class="accordion-right">
+            <span class="initiative-tag ongoing">Ongoing</span>
+            <div class="accordion-arrow">+</div>
+          </div>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-subtitle">Transition: from permanent squad assignment to priority-driven allocation</div>
+          <ul class="step-bullets">
+            <li>Current squad-locked structure is not sustainable for the future we want to build</li>
+            <li>Not a restructure: designers still have a home squad</li>
+            <li>Capacity shifts to higher-impact work at domain or tribe level when needed</li>
+            <li>Enables more horizontal collaboration and cross-domain visibility</li>
+            <li>Maintains predictability for squads while building flexibility</li>
+          </ul>
+          <a class="step-link" href="https://momohalim-dh.github.io/riderux/2026/q3-design-allocation" target="_blank">Read the Q3 allocation update</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="section" id="sec-moat">
+    <div class="section-label">The question underneath</div>
+    <h2>What relies purely on human judgment?</h2>
+    <p>Execution is free. AI can already generate layouts, flows, copy variants, research transcripts, and synthesis drafts faster and cheaper than any team. The question is not whether that changes our work. It does. The question is what is left that only we can do.</p>
+
+    <p>Below is a first map of the UX moat: the areas where human judgment is not just useful but irreplaceable.</p>
+
+    <p class="pandora-credit">Inspired by <a href="https://tcabaco.github.io/uxleadsoffsitemay26/" target="_blank">Pandora's manifesto</a>, some content adjusted to suit Rider UX context and status quo.</p>
+
+    <div class="moat-grid">
+      <div class="moat-card">
+        <div class="moat-title">Empathy & storytelling</div>
+        <div class="moat-desc">To translate what we know about riders into something a team can build toward and believe in requires empathy, judgment and intent. That translation from insight to direction to shipped experience, is the craft.</div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-title">Systems thinking</div>
+        <div class="moat-desc">Accelerate Cape migration: use AI to automate component development, unblock the backlog, and empower designers and engineers to review and ship output rather than build from scratch.</div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-title">Conceptual discovery</div>
+        <div class="moat-desc">Finding new interaction paradigms, not refining existing ones. AI generates variations inside a pattern. Shifting the pattern requires human imagination and taste.</div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-title">Synthesis at scale</div>
+        <div class="moat-desc">Cross-study pattern identification, connecting qualitative and quantitative signals, building thematic repositories from years of research. AI can surface patterns. UX decides which ones matter and what they mean for the product.</div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-title">Strategic framing</div>
+        <div class="moat-desc">Knowing what is worth building. Not just "what do riders want" but "what should we build and why does it matter." Aligning what we build with values, context, and user history. That framing is ours.</div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-title">Simulation ownership</div>
+        <div class="moat-desc">Running designs through AI-generated user models to test concepts before real research. The UX lens on what to simulate, how to interpret results, and what it means for the rider is ours, wherever ownership formally lands.</div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Workflow -->
+  <div class="section" id="sec-roles">
+    <div class="section-label">How each role evolves</div>
+    <h2>A proposal for what the roles become</h2>
+    <p>When the doing is no longer the definition, what is? Below is a first attempt at reframing each role around what it owns rather than what it produces.</p>
+
+    <div class="accordions" style="margin-top: 20px;">
+
+      <div class="accordion" onclick="toggleAccordion(this)">
+        <div class="accordion-header">
+          <div class="accordion-left">
+            <div class="accordion-num" style="color: var(--accent);">01</div>
+            <div class="accordion-theme">UX Designer</div>
+          </div>
+          <div class="accordion-right">
+            <div class="accordion-arrow">+</div>
+          </div>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-subtitle">The designer's role shifts from producing screens to owning the end-to-end experience logic: the decisions about what should exist, how it connects, and why it matters to the business and the rider. Their real value is pattern recognition across contexts that no single squad can see.</div>
+          <div class="role-split">
+            <div>
+              <div class="role-col-head">AI takes over</div>
+              <ul class="step-bullets">
+                <li>Layout and flow generation</li>
+                <li>Component specs and annotation</li>
+                <li>Prototype variants</li>
+                <li>Accessibility checks</li>
+                <li>Design token maintenance</li>
+              </ul>
+            </div>
+            <div>
+              <div class="role-col-head">Designer owns</div>
+              <ul class="step-bullets">
+                <li>Taste: knowing when something is wrong before you can say why</li>
+                <li>Experience coherence across surfaces and releases</li>
+                <li>Judgment on when to break the pattern</li>
+                <li>Emotional resonance decisions</li>
+                <li>Accountability for outcomes, not artifacts</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion" onclick="toggleAccordion(this)">
+        <div class="accordion-header">
+          <div class="accordion-left">
+            <div class="accordion-num" style="color: var(--accent);">02</div>
+            <div class="accordion-theme">UX Researcher</div>
+          </div>
+          <div class="accordion-right">
+            <div class="accordion-arrow">+</div>
+          </div>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-subtitle">Research stops being a service that produces reports on request and becomes the intelligence layer of the product org. The researcher becomes the team's early warning system, proactively surfacing tensions, assumptions, and blind spots before they become expensive. AI handles the data pipeline; the researcher handles meaning and stakes.</div>
+          <div class="role-split">
+            <div>
+              <div class="role-col-head">AI takes over</div>
+              <ul class="step-bullets">
+                <li>Transcription and tagging</li>
+                <li>Synthesis first drafts</li>
+                <li>Recruitment and scheduling</li>
+                <li>Survey analysis</li>
+                <li>Competitive benchmarking</li>
+              </ul>
+            </div>
+            <div>
+              <div class="role-col-head">Researcher owns</div>
+              <ul class="step-bullets">
+                <li>Deciding which insight changes a decision vs. which is noise</li>
+                <li>Framing the right question before anyone asks</li>
+                <li>Ethical judgment in data collection and interpretation</li>
+                <li>Sense-making across contradictory signals</li>
+                <li>Advocating for the rider when data could be misread</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion" onclick="toggleAccordion(this)">
+        <div class="accordion-header">
+          <div class="accordion-left">
+            <div class="accordion-num" style="color: var(--accent);">03</div>
+            <div class="accordion-theme">UX Writer</div>
+          </div>
+          <div class="accordion-right">
+            <div class="accordion-arrow">+</div>
+          </div>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-subtitle">When AI can generate a hundred copy variants in seconds, the writer's value is no longer in producing words. It is in defining the rules, voice, and boundaries that make AI-generated language trustworthy, on-brand, and locally relevant. The role evolves from a content service into a content system: the person who designs how language works in the product, not just what it says.</div>
+          <div class="role-split">
+            <div>
+              <div class="role-col-head">AI takes over</div>
+              <ul class="step-bullets">
+                <li>Copy variants and first drafts</li>
+                <li>Localization prep</li>
+                <li>Consistency auditing</li>
+                <li>Error message cataloguing</li>
+                <li>Push notification drafts</li>
+              </ul>
+            </div>
+            <div>
+              <div class="role-col-head">Writer owns</div>
+              <ul class="step-bullets">
+                <li>Tonal judgment in high-stakes moments: errors, cancellations, safety</li>
+                <li>Voice decisions that cannot be templated</li>
+                <li>Cultural sensitivity in new markets</li>
+                <li>Knowing when AI copy is correct but feels wrong</li>
+                <li>The line between clarity and coldness</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Orientations -->
+  <div class="section" id="sec-orientations">
+    <div class="section-label">How roles might develop</div>
+    <h2>Two orientations, nothing decided yet</h2>
+    <p>As UX moves upstream toward judgment and strategy, two natural directions are emerging within the discipline. These are not formal tracks. They are a starting frame for a conversation we will need to have with the wider team. Both orientations can connect into a third role: UX as the bridge that holds user understanding across PM, engineering, ops, and business: a function no other discipline is structured to own.</p>
+
+    <div class="orientations">
+      <div class="orientation-card">
+        <div class="orientation-label">Orientation A</div>
+        <div class="orientation-title">Closer to the user</div>
+        <ul class="orientation-items">
+          <li>Strategic framing and problem definition</li>
+          <li>Research synthesis and insight direction</li>
+          <li>Prompt prototyping and concept evaluation</li>
+          <li>Human-centered evaluation of AI outputs</li>
+          <li>Synthetic user simulation and interpretation</li>
+          <li>Connecting user understanding to ops and business</li>
+        </ul>
+      </div>
+      <div class="orientation-card">
+        <div class="orientation-label">Orientation B</div>
+        <div class="orientation-title">Closer to the code</div>
+        <ul class="orientation-items">
+          <li>Design system evolution and AI integration</li>
+          <li>Agentic prototyping and spec generation</li>
+          <li>Design QA automation</li>
+          <li>Tool building and team enablement</li>
+          <li>AI governance for language and components</li>
+          <li>Code contributions alongside engineering</li>
+        </ul>
+      </div>
+    </div>
+    <p class="orientation-note">Both orientations support the connector role. Whether someone leans closer to the user or closer to the code, the opportunity is the same: UX as the function that synthesizes across disciplines and holds the experience together at a level no one else is positioned to own.</p>
+    <p class="pandora-credit" style="margin-top: 14px;">Inspired from <a href="https://tcabaco.github.io/uxleadsoffsitemay26/" target="_blank">Pandora's manifesto</a>.</p>
+  </div>
+
+  <hr>
+
+  <!-- Org section: bullets -->
+  <div class="section" id="sec-org">
+    <div class="section-label">This is not just a UX conversation</div>
+    <h2>AI transformation requires the whole org to move together</h2>
+    <p>Each function has its own evolution roadmap to define. But making the transformation happen requires the org to move as one. A few things that need to be true across functions, not just within UX:</p>
+
+    <ul class="org-bullets">
+      <li>Redefine how we work together as an org: how we structure ourselves, what foundations we prioritize, and how we commit to each other's momentum, not just our own.</li>
+      <li>UX and engineering need to align on how to catch up and scale the design system together: which initiatives to prioritize, how to measure success, how to iterate, and what comes next.</li>
+      <li>Some of this will happen in parallel. But it needs shared attention and commitment to accelerate what matters to us as an org, not just as separate parts.</li>
+      <li>AI investment across DH needs to translate into measurable outcomes, not just activity. How we define and track UX impact when the execution layer is no longer the primary measure is a question we need to answer together.</li>
+    </ul>
+  </div>
+
+  <hr>
+
+  <!-- Open questions -->
+  <div class="section" id="sec-questions">
+    <div class="section-label">Open questions</div>
+    <h2>What we want to align on at the org level</h2>
+    <p>This document is a seed. A few questions that need to be answered at the leadership level before Rider UX Team can produce something actionable:</p>
+
+    <div class="questions">
+      <ol>
+        <li>What are the AI priorities at the Rider PL level that UX is expected to contribute to? What does DH expect from the UX function in the AI agenda?</li>
+        <li>As PM and engineering become more independently capable with AI tools, how do we redefine what a cross-functional team looks like? Who owns what, and when is UX in the room?</li>
+        <li>If UX moves upstream toward judgment and strategy, who is accountable for the quality of what AI produces? How do we make sure that is explicit and not assumed?</li>
+        <li>How do we measure UX impact when the execution layer is no longer the primary signal? What does success look like in a token economy where outcomes matter more than output?</li>
+        <li>What is the direction on how we measure someone's performance when AI is integrated into day-to-day work and collaboration? What do we want to protect and what needs to change?</li>
+        <li>What foundations need product and engineering commitment to actually move? What are we asking of each other, and how do we hold each other to it?</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Closing -->
+  <div class="closing">
+    <p>This is a first draft on a topic that will take the rest of the year to define properly, and even continue iterating it beyond. The goal is not to have all the answers now. It is to walk out of the next leadership conversation with enough shared direction across Design, Product, Engineering.</p>
+  </div>
+
+</div>
+
+<script>
+  function toggleAccordion(el) {
+    el.classList.toggle('open');
+  }
+
+  function smoothScroll(e, id) {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  const stickyHeader = document.getElementById('stickyHeader');
+  const sections = ['sec-now','sec-moat','sec-roles','sec-orientations','sec-org','sec-questions'];
+  const navItems = document.querySelectorAll('.nav-item');
+
+  function updateNav() {
+    let current = '';
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && window.scrollY >= el.offsetTop - 100) current = id;
+    });
+    navItems.forEach(item => {
+      item.classList.toggle('active', item.getAttribute('href') === '#' + current);
+    });
+  }
+
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 80) {
+      stickyHeader.classList.add('visible');
+    } else {
+      stickyHeader.classList.remove('visible');
+    }
+    updateNav();
+  });
+</script>
+</body>
+</html>
